@@ -882,9 +882,9 @@ public final class Twofish_Algorithm // implicit no-argument constructor
 
     // main(): use to generate the Intermediate Values KAT
     // ...........................................................................
-    public static void main(String[] args) {
-        self_test(16);
-        self_test(24);
-        self_test(32);
-    }
+    // public static void main(String[] args) {
+    // self_test(16);
+    // self_test(24);
+    // self_test(32);
+    // }
 }

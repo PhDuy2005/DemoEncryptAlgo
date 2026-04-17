@@ -13,7 +13,7 @@ import com.encrpt.demo.DemoEncryptAlgo.domain.dto.res.RestResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-@RestControllerAdvice
+// @RestControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
     @Override
