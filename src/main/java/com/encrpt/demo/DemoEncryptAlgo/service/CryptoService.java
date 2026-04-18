@@ -1,63 +1,66 @@
 package com.encrpt.demo.DemoEncryptAlgo.service;
 
-import com.encrpt.demo.DemoEncryptAlgo.algo.CryptoAlgorithm;
 import com.encrpt.demo.DemoEncryptAlgo.algo.rc6.Rc6Algorithm;
 import com.encrpt.demo.DemoEncryptAlgo.domain.dto.req.EncryptionRequest;
-import com.encrpt.demo.DemoEncryptAlgo.util.enums.AlgoName;
 import com.encrpt.demo.DemoEncryptAlgo.util.enums.FeatureOption;
 import com.encrpt.demo.DemoEncryptAlgo.util.enums.InputType;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class CryptoService {
 
-    private final Map<AlgoName, CryptoAlgorithm> algorithms = new HashMap<>();
+    private final Rc6Algorithm rc6Algorithm = new Rc6Algorithm();
 
-    public CryptoService() {
-        // đăng ký thuật toán
-        algorithms.put(AlgoName.RC6, new Rc6Algorithm());
+    /**
+     * Phương thức chính xử lý RC6 encrypt/decrypt với format conversion
+     */
+    public String processEncryption(
+            String data, String key,
+            InputType inputType, InputType keyInputType,
+            InputType outputType, FeatureOption feature) throws Exception {
 
-        // TODO: thêm các thuật toán khác
-        // algorithms.put(AlgoName.TWOFISH, new TwofishAlgorithm());
-        // algorithms.put(AlgoName.RINJADEL, new RijndaelAlgorithm());
-        // algorithms.put(AlgoName.SERPENT, new SerpentAlgorithm());
+        // Decode input
+        byte[] decodedData = parseInput(data, inputType);
+        byte[] decodedKey = parseInput(key, keyInputType);
+
+        // Xử lý (encrypt hoặc decrypt)
+        byte[] result;
+        if (feature == FeatureOption.ENCRYPT) {
+            result = rc6Algorithm.encrypt(decodedData, decodedKey);
+        } else if (feature == FeatureOption.DECRYPT) {
+            result = rc6Algorithm.decrypt(decodedData, decodedKey);
+        } else {
+            throw new IllegalArgumentException("Feature không hợp lệ: " + feature);
+        }
+
+        // Encode output
+        return formatOutput(result, outputType);
     }
 
+    /**
+     * Phương thức wrapper cho request DTO (sử dụng cho CryptoController)
+     */
     public String process(EncryptionRequest req) {
-
-        // ===== 1. Parse input =====
-        byte[] data = parseInput(req.getData(), req.getInputType());
-        byte[] key  = parseInput(req.getKey(), req.getKeyInputType());
-
-        // ===== 2. Lấy thuật toán =====
-        CryptoAlgorithm algorithm = algorithms.get(req.getAlgoName());
-
-        if (algorithm == null) {
-            throw new RuntimeException("Unsupported algorithm: " + req.getAlgoName());
+        try {
+            return processEncryption(
+                    req.getData(), req.getKey(),
+                    req.getInputType() != null ? req.getInputType() : InputType.BASE64,
+                    req.getKeyInputType() != null ? req.getKeyInputType() : InputType.PLAIN_TEXT,
+                    req.getOutputType() != null ? req.getOutputType() : InputType.BASE64,
+                    req.getFeature());
+        } catch (Exception e) {
+            throw new RuntimeException("RC6 Processing failed: " + e.getMessage(), e);
         }
-
-        // ===== 3. Encrypt / Decrypt =====
-        byte[] result;
-
-        if (req.getFeature() == FeatureOption.ENCRYPT) {
-            result = algorithm.encrypt(data, key);
-        } else {
-            result = algorithm.decrypt(data, key);
-        }
-
-        // ===== 4. Format output =====
-        return formatOutput(result, req.getOutputType());
     }
 
     // ================= PARSE =================
 
     private byte[] parseInput(String input, InputType type) {
-        if (input == null) return new byte[0];
+        if (input == null)
+            return new byte[0];
 
         switch (type) {
             case BASE64:

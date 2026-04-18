@@ -1,0 +1,235 @@
+{
+    "info": {
+        "name": "DemoEncryptAlgo - 3 Thuật Toán Mã Hóa",
+        "description": "Postman Collection cho Demo Mã Hóa: Twofish, Rijndael, RC6",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. TWOFISH",
+            "item": [
+                {
+                    "name": "Twofish - Mã hóa",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"HelloWorld123456\",\n  \"key\": \"MySecretKey12345\",\n  \"algoName\": \"TWOFISH\",\n  \"feature\": \"ENCRYPT\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/twofish/process",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "twofish",
+                                "process"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Twofish - Giải mã",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"BASE64_ENCRYPTED_DATA_HERE\",\n  \"key\": \"MySecretKey12345\",\n  \"algoName\": \"TWOFISH\",\n  \"feature\": \"DECRYPT\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/twofish/process",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "twofish",
+                                "process"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. RIJNDAEL",
+            "item": [
+                {
+                    "name": "Rijndael - Mã hóa",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"HelloWorld123456\",\n  \"key\": \"MySecretKey12345\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/rijndael/encrypt",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "rijndael",
+                                "encrypt"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Rijndael - Giải mã",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"BASE64_ENCRYPTED_DATA_HERE\",\n  \"key\": \"MySecretKey12345\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/rijndael/decrypt",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "rijndael",
+                                "decrypt"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. RC6",
+            "item": [
+                {
+                    "name": "RC6 - Mã hóa",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"HelloWorld123456\",\n  \"key\": \"MySecretKey12345\",\n  \"algoName\": \"RC6\",\n  \"feature\": \"ENCRYPT\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/encrypt/process",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "encrypt",
+                                "process"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "RC6 - Giải mã",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": \"BASE64_ENCRYPTED_DATA_HERE\",\n  \"key\": \"MySecretKey12345\",\n  \"algoName\": \"RC6\",\n  \"feature\": \"DECRYPT\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/encrypt/process",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "encrypt",
+                                "process"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "DỮ LIỆU THAM KHẢO",
+            "item": [
+                {
+                    "name": "📝 Hướng dẫn sử dụng",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:8080",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "test_data",
+            "value": "HelloWorld123456",
+            "type": "string"
+        },
+        {
+            "key": "test_key",
+            "value": "MySecretKey12345",
+            "type": "string"
+        }
+    ]
+}
