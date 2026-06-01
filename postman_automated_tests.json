@@ -1,0 +1,1017 @@
+{
+    "info": {
+        "_postman_id": "automated-crypto-tests-v1",
+        "name": "DemoEncryptAlgo - Automated Testing Suite",
+        "description": "Fully automated encrypt/decrypt round-trip tests for all 6 algorithms with test assertions and automatic data passing",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "48240608"
+    },
+    "item": [
+        {
+            "name": "Setup & Initialization",
+            "item": [
+                {
+                    "name": "Initialize Test Variables",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Initialize global test summary",
+                                    "pm.globals.set('test_summary', JSON.stringify({",
+                                    "  total_tests: 0,",
+                                    "  passed: 0,",
+                                    "  failed: 0,",
+                                    "  algorithms: {}",
+                                    "}));",
+                                    "",
+                                    "console.log('✓ Test environment initialized');",
+                                    "pm.globals.set('start_time', new Date().getTime());"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "https://postman-echo.com/get",
+                            "protocol": "https",
+                            "host": [
+                                "postman-echo.com"
+                            ],
+                            "path": [
+                                "get"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "RIJNDAEL Tests",
+            "item": [
+                {
+                    "name": "RIJNDAEL - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'RIJNDAEL');",
+                                    "pm.globals.set('test_data', 'Hello World Encryption Test 123');",
+                                    "pm.globals.set('test_key', 'MySecretKey12345');",
+                                    "console.log('► Testing RIJNDAEL Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const algo = pm.globals.get('current_algo');",
+                                    "const testData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('RIJNDAEL - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Response has required fields",
+                                    "pm.test('RIJNDAEL - Encrypt response has required fields', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData).to.have.property('statusCode');",
+                                    "  pm.expect(jsonData).to.have.property('data');",
+                                    "  pm.expect(jsonData).to.have.property('message');",
+                                    "});",
+                                    "",
+                                    "// Test 3: Encrypted data is not empty",
+                                    "pm.test('RIJNDAEL - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "  pm.expect(jsonData.data).to.not.equal(pm.globals.get('test_data'));",
+                                    "});",
+                                    "",
+                                    "// Test 4: Save encrypted data for decryption",
+                                    "pm.test('RIJNDAEL - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('rijndael_encrypted', jsonData.data);",
+                                    "  console.log('✓ RIJNDAEL encrypted data saved: ' + jsonData.data.substring(0, 30) + '...');",
+                                    "});",
+                                    "",
+                                    "// Test 5: Error message is null",
+                                    "pm.test('RIJNDAEL - Encrypt has no error', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.error).to.be.null;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "RIJNDAEL - Decrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Use encrypted data from previous request",
+                                    "const encrypted = pm.globals.get('rijndael_encrypted');",
+                                    "if (!encrypted) {",
+                                    "  throw new Error('RIJNDAEL encrypted data not found. Run Encrypt test first.');",
+                                    "}",
+                                    "console.log('► Testing RIJNDAEL Decryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('RIJNDAEL - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('RIJNDAEL - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ RIJNDAEL Round-trip successful');",
+                                    "});",
+                                    "",
+                                    "// Test 3: Response has no error",
+                                    "pm.test('RIJNDAEL - Decrypt has no error', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.error).to.be.null;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{rijndael_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "SERPENT Tests",
+            "item": [
+                {
+                    "name": "SERPENT - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'SERPENT');",
+                                    "console.log('► Testing SERPENT Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('SERPENT - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Encrypted data is not empty",
+                                    "pm.test('SERPENT - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Test 3: Save encrypted data",
+                                    "pm.test('SERPENT - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('serpent_encrypted', jsonData.data);",
+                                    "  console.log('✓ SERPENT encrypted data saved');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"SERPENT\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "SERPENT - Decrypt",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('SERPENT - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('SERPENT - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ SERPENT Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"SERPENT\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{serpent_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "TWOFISH Tests",
+            "item": [
+                {
+                    "name": "TWOFISH - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'TWOFISH');",
+                                    "console.log('► Testing TWOFISH Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('TWOFISH - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Encrypted data is not empty",
+                                    "pm.test('TWOFISH - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Test 3: Save encrypted data",
+                                    "pm.test('TWOFISH - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('twofish_encrypted', jsonData.data);",
+                                    "  console.log('✓ TWOFISH encrypted data saved');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"TWOFISH\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "TWOFISH - Decrypt",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('TWOFISH - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('TWOFISH - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ TWOFISH Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"TWOFISH\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{twofish_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "RC6 Tests",
+            "item": [
+                {
+                    "name": "RC6 - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'RC6');",
+                                    "console.log('► Testing RC6 Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('RC6 - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Encrypted data is not empty",
+                                    "pm.test('RC6 - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Test 3: Save encrypted data",
+                                    "pm.test('RC6 - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('rc6_encrypted', jsonData.data);",
+                                    "  console.log('✓ RC6 encrypted data saved');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RC6\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "RC6 - Decrypt",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('RC6 - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('RC6 - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ RC6 Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RC6\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{rc6_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "MARS Tests",
+            "item": [
+                {
+                    "name": "MARS - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'MARS');",
+                                    "console.log('► Testing MARS Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('MARS - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Encrypted data is not empty",
+                                    "pm.test('MARS - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Test 3: Save encrypted data",
+                                    "pm.test('MARS - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('mars_encrypted', jsonData.data);",
+                                    "  console.log('✓ MARS encrypted data saved');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"MARS\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "MARS - Decrypt",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('MARS - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('MARS - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ MARS Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"MARS\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{mars_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "BLOWFISH Tests",
+            "item": [
+                {
+                    "name": "BLOWFISH - Encrypt",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.globals.set('current_algo', 'BLOWFISH');",
+                                    "console.log('► Testing BLOWFISH Encryption');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('BLOWFISH - Encrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Encrypted data is not empty",
+                                    "pm.test('BLOWFISH - Encrypt produces non-empty ciphertext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Test 3: Save encrypted data",
+                                    "pm.test('BLOWFISH - Save encrypted data for decryption', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.globals.set('blowfish_encrypted', jsonData.data);",
+                                    "  console.log('✓ BLOWFISH encrypted data saved');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"BLOWFISH\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "BLOWFISH - Decrypt",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const originalData = pm.globals.get('test_data');",
+                                    "",
+                                    "// Test 1: Status code is 200",
+                                    "pm.test('BLOWFISH - Decrypt returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "// Test 2: Decrypted data matches original",
+                                    "pm.test('BLOWFISH - Decrypt produces matching plaintext', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ BLOWFISH Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"BLOWFISH\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{blowfish_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Error Validation Tests",
+            "item": [
+                {
+                    "name": "Invalid Algorithm Type",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Invalid algorithm returns 400', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Invalid algorithm error message is present', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.error).to.exist;",
+                                    "  pm.expect(jsonData.data).to.be.null;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"INVALID_ALGO\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Missing Required Fields",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Missing fields returns 400', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(400);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error contains validation message', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.error).to.equal('Validation error');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Format Conversion Tests",
+            "item": [
+                {
+                    "name": "HEX Format Encryption",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('HEX format encryption returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('HEX encrypted output is valid', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  pm.expect(jsonData.data).to.exist;",
+                                    "  pm.globals.set('hex_encrypted', jsonData.data);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{test_data}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"HEX\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "HEX Format Decryption",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('HEX format decryption returns 200', () => {",
+                                    "  pm.expect(pm.response.code).to.equal(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('HEX decrypted data matches original', () => {",
+                                    "  const jsonData = pm.response.json();",
+                                    "  const originalData = pm.globals.get('test_data');",
+                                    "  pm.expect(jsonData.data).to.equal(originalData);",
+                                    "  console.log('✓ HEX Format Round-trip successful');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{hex_encrypted}}\",\n  \"key\": \"{{test_key}}\",\n  \"inputType\": \"HEX\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/crypto/process",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "crypto",
+                                "process"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "test_data",
+            "value": "Hello World Encryption Test 123",
+            "type": "string"
+        },
+        {
+            "key": "test_key",
+            "value": "MySecretKey12345",
+            "type": "string"
+        }
+    ]
+}

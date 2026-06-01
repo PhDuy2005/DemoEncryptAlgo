@@ -15,11 +15,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EncryptionRequest {
-    private String data; // Dữ liệu cần xử lý (Base64 hoặc plain text)
-    private String key; // Khóa bí mật (Base64 hoặc plain text)
-    private AlgoName algoName; // Thuật toán (TWOFISH, RINJADEL, SERPENT, RC6)
-    private FeatureOption feature; // Tính năng (ENCRYPT hoặc DECRYPT)
-    private InputType inputType; // Định dạng input data (BASE64 hoặc PLAIN_TEXT) - mặc định Base64
-    private InputType keyInputType; // Định dạng input key (BASE64 hoặc PLAIN_TEXT) - mặc định PLAIN_TEXT
-    private InputType outputType; // Định dạng output (BASE64 hoặc PLAIN_TEXT) - mặc định Base64
+    private AlgoName type;
+    private FeatureOption feature;
+    private String data;
+    private String key;
+    private InputType inputType;
+    private InputType keyInputType;
+    private InputType outputType;
+
+    public AlgoName getEffectiveType() {
+        return type;
+    }
 }

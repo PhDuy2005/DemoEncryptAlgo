@@ -11,12 +11,9 @@
  */
 package com.encrpt.demo.DemoEncryptAlgo.algo;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -120,7 +117,7 @@ public class Twofish_Properties // implicit no-argument constructor
         out.println("# ----- Begin " + ALGORITHM + " properties -----");
         out.println("#");
         String key, value;
-        Enumeration enums = properties.propertyNames();
+        Enumeration<?> enums = properties.propertyNames();
         while (enums.hasMoreElements()) {
             key = (String) enums.nextElement();
             value = getProperty(key);
@@ -132,7 +129,7 @@ public class Twofish_Properties // implicit no-argument constructor
 
     // public synchronized void load(InputStream in) throws IOException {}
 
-    public static Enumeration propertyNames() {
+    public static Enumeration<?> propertyNames() {
         return properties.propertyNames();
     }
 
@@ -158,7 +155,7 @@ public class Twofish_Properties // implicit no-argument constructor
         String s = getProperty("Trace." + label);
         if (s == null)
             return false;
-        return new Boolean(s).booleanValue();
+        return Boolean.parseBoolean(s);
     }
 
     /**

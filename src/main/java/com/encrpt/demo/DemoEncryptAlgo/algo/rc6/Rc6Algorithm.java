@@ -2,6 +2,7 @@ package com.encrpt.demo.DemoEncryptAlgo.algo.rc6;
 import java.util.Arrays;
 
 import com.encrpt.demo.DemoEncryptAlgo.algo.CryptoAlgorithm;
+import com.encrpt.demo.DemoEncryptAlgo.util.CryptoCodec;
 
 public class Rc6Algorithm implements CryptoAlgorithm {
 
@@ -129,16 +130,10 @@ public class Rc6Algorithm implements CryptoAlgorithm {
     // ================= PADDING =================
 
     private byte[] pad(byte[] data) {
-        int pad = 16 - (data.length % 16);
-        byte[] result = Arrays.copyOf(data, data.length + pad);
-        for (int i = data.length; i < result.length; i++) {
-            result[i] = (byte) pad;
-        }
-        return result;
+        return CryptoCodec.padPkcs7(data, 16);
     }
 
     private byte[] unpad(byte[] data) {
-        int pad = data[data.length - 1];
-        return Arrays.copyOf(data, data.length - pad);
+        return CryptoCodec.unpadPkcs7(data, 16);
     }
 }
