@@ -1,0 +1,575 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Crypto Benchmark Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f4f6f9;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .card {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #fff;
+        font-weight: bold;
+        border-top: 3px solid #0d6efd;
+      }
+      .table-responsive {
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">
+          DEMO CÁC THUẬT TOÁN MÃ HÓA
+        </h1>
+        <p class="text-muted">
+          So sánh trực quan các thuật toán : Rijndael,
+          Serpent, Twofish, RC6, Mars và Blowfish
+        </p>
+      </div>
+
+      <ul class="nav nav-tabs mb-4" id="cryptoTab" role="tablist">
+        <li class="nav-item">
+          <button
+            class="nav-link active"
+            id="single-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#single"
+            type="button"
+          >
+            Thuật Toán
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            id="benchmark-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#benchmark"
+            type="button"
+          >
+            So Sánh Tốc Độ
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="cryptoTabContent">
+        <div class="tab-pane fade show active" id="single" role="tabpanel">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card p-4">
+                <h5 class="fw-bold text-secondary mb-3">Cấu hình & Input</h5>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >1. Chọn thuật toán:</label
+                  >
+                  <select id="singleAlgo" class="form-select">
+                    <option value="RIJNDAEL">RIJNDAEL (AES)</option>
+                    <option value="RC6">RC6</option>
+                    <option value="SERPENT">SERPENT</option>
+                    <option value="TWOFISH">TWOFISH</option>
+                    <option value="MARS">MARS</option>
+                    <option value="BLOWFISH">BLOWFISH</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >2. Nhập Khóa (Key):</label
+                  >
+                  <input
+                    type="text"
+                    id="singleKey"
+                    class="form-control"
+                    value="khoabimakhwabina"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >3. Dữ liệu văn bản (Input):</label
+                  >
+                  <textarea
+                    id="singleInput"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Nhập chuỗi cần xử lý..."
+                  ></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                  <button
+                    class="btn btn-success flex-fill fw-bold"
+                    onclick="handleSingle('ENCRYPT')"
+                  >
+                    Mã hóa
+                  </button>
+                  <button
+                    class="btn btn-warning text-white flex-fill fw-bold"
+                    onclick="handleSingle('DECRYPT')"
+                  >
+                    Giải mã
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card p-4 h-100">
+                <h5 class="fw-bold text-secondary mb-3">Kết quả đầu ra</h5>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold"
+                    >Kết quả (Output):</label
+                  >
+                  <textarea
+                    id="singleOutput"
+                    class="form-control bg-light"
+                    rows="6"
+                    readonly
+                  ></textarea>
+                </div>
+                <div class="mb-3 d-flex justify-content-between">
+                  <span class="badge bg-secondary" id="singleCharCount"
+                    >Độ dài: 0 ký tự</span
+                  >
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="copyText('singleOutput')"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div
+                  id="singleStatus"
+                  class="alert alert-info py-2"
+                  style="font-size: 14px"
+                >
+                  Sẵn sàng.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="benchmark" role="tabpanel">
+          <div class="card p-4">
+            <p class="text-muted small">
+              Chọn bất kỳ file nào (Ảnh, PDF, Docx, Text...)
+            </p>
+
+            <div
+              class="mb-4 p-4 border border-dashed rounded text-center bg-light"
+            >
+              <label
+                for="benchmarkFile"
+                class="form-label fw-bold d-block text-primary fs-5 mb-2"
+                >Chọn file</label
+              >
+              <input
+                type="file"
+                id="benchmarkFile"
+                class="form-control w-50 mx-auto"
+                onchange="handleFileSelect()"
+              />
+              <div
+                id="fileInfo"
+                class="mt-2 text-muted small"
+                style="display: none"
+              >
+                Tên file:
+                <span id="fileName" class="fw-bold text-dark"></span> | Dung
+                lượng: <span id="fileSize" class="fw-bold text-dark"></span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <button
+                id="btnRunBenchmark"
+                class="btn btn-danger btn-lg w-100 fw-bold"
+                onclick="runFileBenchmark()"
+                disabled
+              >
+                BẮT ĐẦU CHẠY
+              </button>
+            </div>
+
+            <h5 class="fw-bold text-secondary mb-3">
+              Kết quả đo lường tốc độ xử lý file
+            </h5>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Thuật toán</th>
+                    <th>Khối (Block)</th>
+                    <th>Thời gian Mã hóa</th>
+                    <th>Thời gian Giải mã</th>
+                    <th>Trạng thái</th>
+                    <th>Kiểm tra kết quả</th>
+                  </tr>
+                </thead>
+                <tbody id="benchmarkResultTable">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">
+                      Vui lòng chọn file và bấm nút Chạy phía trên.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Biến toàn cục lưu dữ liệu file mã hóa Base64
+      let uploadedFileBase64 = "";
+
+      // 1. Hàm tự động xử lý khi bấm chọn file thành công
+      function handleFileSelect() {
+        const fileInput = document.getElementById("benchmarkFile");
+        const file = fileInput.files[0];
+
+        if (!file) return;
+
+        // Hiển thị thông tin file
+        document.getElementById("fileName").innerText = file.name;
+        document.getElementById("fileSize").innerText =
+          (file.size / (1024 * 1024)).toFixed(2) + " MB";
+        document.getElementById("fileInfo").style.display = "block";
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          // Tách chuỗi lấy phần mã dữ liệu Base64 thuần túy
+          uploadedFileBase64 = e.target.result.split(",")[1];
+
+          // KÍCH HOẠT MỞ KHÓA NÚT BẤM ĐỎ
+          document.getElementById("btnRunBenchmark").disabled = false;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // 2. Hàm gọi API đơn lẻ (Tab 1)
+      async function handleSingle(feature) {
+        const type = document.getElementById("singleAlgo").value;
+        const key = document.getElementById("singleKey").value;
+        const data = document.getElementById("singleInput").value;
+        const status = document.getElementById("singleStatus");
+
+        if (!data) {
+          alert("Vui lòng nhập dữ liệu đầu vào!");
+          return;
+        }
+
+        status.className = "alert alert-warning py-2";
+        status.innerText = "⏳ Đang tính toán dữ liệu...";
+
+        const bodyRequest = {
+          type: type,
+          feature: feature,
+          data: data,
+          key: key,
+          inputType: feature === "ENCRYPT" ? "PLAIN_TEXT" : "BASE64",
+          keyInputType: "PLAIN_TEXT",
+          outputType: feature === "ENCRYPT" ? "BASE64" : "PLAIN_TEXT",
+        };
+
+        try {
+          const response = await fetch("/api/crypto/process", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodyRequest),
+          });
+
+          const resJson = await response.json();
+
+          if (response.ok && resJson.statusCode === 200) {
+            document.getElementById("singleOutput").value = resJson.data;
+            document.getElementById("singleCharCount").innerText =
+              `Độ dài: ${resJson.data.length} ký tự`;
+            status.className = "alert alert-success py-2";
+            status.innerText = `${resJson.message}`;
+          } else {
+            throw new Error(resJson.message || "Lỗi không xác định");
+          }
+        } catch (error) {
+          status.className = "alert alert-danger py-2";
+          status.innerText = "Thất bại: " + error.message;
+        }
+      }
+
+      // 3. Hàm chạy thử nghiệm hiệu năng tuần tự (Tab 2)
+      // Hàm chạy Benchmark hiển thị kết quả THỜI GIAN THỰC (Real-time)
+      // Đối tượng toàn cục để lưu trữ kết quả mã hóa (Ciphertext) của từng thuật toán để đem đi giải mã
+      let encryptedDataStore = {};
+      // Lưu lại định dạng file gốc để khi giải mã xong thì khôi phục đúng file cho người dùng tải về
+      let originalFileType = "";
+
+      function handleFileSelect() {
+        const fileInput = document.getElementById("benchmarkFile");
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        document.getElementById("fileName").innerText = file.name;
+        document.getElementById("fileSize").innerText =
+          (file.size / (1024 * 1024)).toFixed(2) + " MB";
+        document.getElementById("fileInfo").style.display = "block";
+
+        originalFileType = file.type; // Lưu loại file (ví dụ: image/jpeg, application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uploadedFileBase64 = e.target.result.split(",")[1];
+          document.getElementById("btnRunBenchmark").disabled = false;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function normalizeKeyForAlgo(algo, baseKey) {
+        const algoLengths = {
+          RIJNDAEL: [16, 24, 32],
+          RC6: [16, 24, 32],
+          SERPENT: [16, 24, 32],
+          MARS: [16, 24, 32],
+          TWOFISH: [8, 16, 24, 32],
+          // BLOWFISH: variable, allow as-is
+        };
+
+        const allowed = algoLengths[algo];
+        if (!allowed) return baseKey;
+
+        // Use ASCII length (works for our keys). Choose the smallest allowed length >= baseKey length, or the smallest allowed length.
+        let len = baseKey.length;
+        let target = allowed.find((l) => l === len) || allowed.find((l) => l > len) || allowed[0];
+
+        // Pad (repeat) or truncate to target length
+        let key = baseKey;
+        while (key.length < target) key += "0";
+        if (key.length > target) key = key.substring(0, target);
+        return key;
+      }
+
+      async function runFileBenchmark() {
+        if (!uploadedFileBase64) {
+          alert("Vui lòng chọn file trước!");
+          return;
+        }
+        const baseKey = "key_file_benchmark_123";
+        const algos = [
+          "RIJNDAEL",
+          "RC6",
+          "SERPENT",
+          "TWOFISH",
+          "MARS",
+          "BLOWFISH",
+        ];
+        const tbody = document.getElementById("benchmarkResultTable");
+
+        // 1. Tạo giao diện hàng đợi ban đầu
+        tbody.innerHTML = "";
+        algos.forEach((algo) => {
+          let blockChange = algo === "BLOWFISH" ? "64-bit" : "128-bit";
+          tbody.innerHTML += `
+            <tr id="row-${algo}">
+                <td class="fw-bold text-dark">${algo}</td>
+                <td><span class="badge bg-secondary">${blockChange}</span></td>
+                <td class="encrypt-time text-muted">⏳ Chờ...</td>
+                <td class="decrypt-time text-muted">⏳ Chờ...</td>
+                <td><span class="status-badge badge bg-warning text-dark">Sẵn sàng</span></td>
+                <td class="action-cell text-center"><span class="text-muted small">-</span></td>
+            </tr>
+        `;
+        });
+
+        // ==========================================
+        // PHASE 1: TIẾN TRÌNH MÃ HÓA LUÂN PHIÊN (ENCRYPT)
+        // ==========================================
+        for (let algo of algos) {
+          const row = document.getElementById(`row-${algo}`);
+          const encCell = row.querySelector(".encrypt-time");
+          const statusBadge = row.querySelector(".status-badge");
+
+          encCell.className = "encrypt-time text-primary fw-bold";
+          encCell.innerText = "⚡ Đang mã hóa...";
+          statusBadge.className = "status-badge badge bg-primary text-white";
+          statusBadge.innerText = "Đang mã hóa";
+
+          const keyForAlgo = normalizeKeyForAlgo(algo, baseKey);
+          const bodyRequest = {
+            type: algo,
+            feature: "ENCRYPT",
+            data: uploadedFileBase64,
+            key: keyForAlgo,
+            inputType: "BASE64",
+            keyInputType: "PLAIN_TEXT",
+            outputType: "BASE64",
+          };
+
+          const startTime = performance.now();
+          try {
+            const response = await fetch("/api/crypto/process", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(bodyRequest),
+            });
+            const resJson = await response.json();
+            const endTime = performance.now();
+
+            if (!response.ok) {
+              console.error(`[ENCRYPT] ${algo} failed:`, resJson);
+              encCell.className = "encrypt-time text-muted";
+              encCell.innerText = "Lỗi";
+              statusBadge.className = "status-badge badge bg-danger text-white";
+              statusBadge.innerText = `❌ Lỗi: ${resJson.message || 'Server'}`;
+            } else {
+              // Cất chuỗi mã hóa vào kho lưu trữ để tý nữa đem ra giải mã
+              encryptedDataStore[algo] = resJson.data;
+
+              encCell.className = "encrypt-time text-danger fw-bold fs-6";
+              encCell.innerText = `${(endTime - startTime).toFixed(2)} ms`;
+              statusBadge.className = "status-badge badge bg-info text-dark";
+              statusBadge.innerText = "Mã hóa xong";
+            }
+          } catch (err) {
+            console.error(`[ENCRYPT] ${algo} exception:`, err);
+            encCell.className = "encrypt-time text-muted";
+            encCell.innerText = "Lỗi";
+            statusBadge.className = "status-badge badge bg-danger text-white";
+            statusBadge.innerText = "❌ Lỗi mã hóa";
+          }
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+
+        // Nghỉ 500ms giữa 2 hiệp để thầy cô kịp quan sát giao diện chuyển trạng thái sang Giải mã
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // ==========================================
+        // PHASE 2: TIẾN TRÌNH GIẢI MÃ NGƯỢC (DECRYPT)
+        // ==========================================
+        try {
+          for (let algo of algos) {
+            // Nếu thuật toán trước đó bị lỗi mã hóa và không có dữ liệu cipher, bỏ qua không giải mã
+            if (!encryptedDataStore[algo]) {
+              console.log(`[DECRYPT] Skip ${algo} - no encrypted data`);
+              continue;
+            }
+
+            console.log(`[DECRYPT] Starting ${algo}...`);
+            const row = document.getElementById(`row-${algo}`);
+            if (!row) {
+              console.error(`[DECRYPT] Row not found for ${algo}`);
+              continue;
+            }
+
+            const decCell = row.querySelector(".decrypt-time");
+            const statusBadge = row.querySelector(".status-badge");
+            const actionCell = row.querySelector(".action-cell");
+
+            decCell.className = "decrypt-time text-primary fw-bold";
+            decCell.innerText = "⚡ Đang giải mã...";
+            statusBadge.className = "status-badge badge bg-primary text-white";
+            statusBadge.innerText = "Đang giải mã";
+
+            const keyForAlgo = normalizeKeyForAlgo(algo, baseKey);
+            const bodyRequest = {
+              type: algo,
+              feature: "DECRYPT",
+              data: encryptedDataStore[algo],
+              key: keyForAlgo,
+              inputType: "BASE64",
+              keyInputType: "PLAIN_TEXT",
+              outputType: "BASE64",
+            };
+
+            const startTime = performance.now();
+            try {
+              const response = await fetch("/api/crypto/process", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest),
+              });
+              const resJson = await response.json();
+              const endTime = performance.now();
+
+              if (!response.ok) {
+                throw new Error(resJson.message || "API Error");
+              }
+
+              decCell.className = "decrypt-time text-success fw-bold fs-6";
+              decCell.innerText = `${(endTime - startTime).toFixed(2)} ms`;
+
+              statusBadge.className = "status-badge badge bg-success text-white";
+              statusBadge.innerText = "✔ Hoàn tất";
+
+              // SINH NÚT TẢI FILE TẠI CHỖ ĐỂ KIỂM CHỨNG DỮ LIỆU ĐÃ ĐƯỢC KHÔI PHỤC ĐÚNG
+              const decryptedBase64 = resJson.data;
+              const btn = document.createElement("button");
+              btn.className = "btn btn-sm btn-outline-success fw-bold";
+              btn.textContent = "💾 Tải file khôi phục";
+              btn.dataset.base64 = decryptedBase64;
+              btn.dataset.algoName = algo;
+              btn.addEventListener("click", function () {
+                downloadBlobFile(this.dataset.base64, this.dataset.algoName);
+              });
+              actionCell.innerHTML = "";
+              actionCell.appendChild(btn);
+              console.log(`[DECRYPT] ${algo} completed successfully`);
+            } catch (err) {
+              console.error(`[DECRYPT] ${algo} error:`, err);
+              decCell.className = "decrypt-time text-muted";
+              decCell.innerText = "Lỗi";
+              statusBadge.className = "status-badge badge bg-danger text-white";
+              statusBadge.innerText = "❌ Lỗi giải mã";
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+        } catch (phaseErr) {
+          console.error("[DECRYPT PHASE] Critical error:", phaseErr);
+          alert("Lỗi PHASE 2: " + phaseErr.message);
+        }
+      }
+
+      // Hàm hỗ trợ chuyển đổi chuỗi Base64 đã giải mã ngược lại thành File vật lý cho người dùng tải về máy
+      function downloadBlobFile(base64Data, algoName) {
+        try {
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: originalFileType });
+
+          // Tạo link ngầm để tải xuống file
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+
+          // Lấy tên file gốc từ input và chèn thêm tên thuật toán để phân biệt
+          const originalName =
+            document.getElementById("benchmarkFile").files[0].name;
+          link.download = `Decrypted_${algoName}_${originalName}`;
+          link.click();
+        } catch (e) {
+          alert("Lỗi khôi phục cấu trúc file nhị phân: " + e.message);
+        }
+      }
+      
+      function copyText(id) {
+        const text = document.getElementById(id);
+        text.select();
+        document.execCommand("copy");
+        alert("Đã copy!");
+      }
+    </script>
+  </body>
+</html>
