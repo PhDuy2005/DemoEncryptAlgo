@@ -1,0 +1,350 @@
+{
+  "info": {
+    "_postman_id": "80a1d889-c6e5-49a3-a698-dc2c00d13780",
+    "name": "DemoEncryptAlgo - Unified Crypto API",
+    "description": "Demo encrypt/decrypt round-trip for RIJNDAEL, SERPENT, TWOFISH, RC6, MARS, and BLOWFISH using POST {{base_url}}/api/crypto/process.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48240608",
+    "_collection_link": "https://go.postman.co/collection/48240608-80a1d889-c6e5-49a3-a698-dc2c00d13780?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "RIJNDAEL",
+      "item": [
+        {
+          "name": "RIJNDAEL - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RIJNDAEL - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"RIJNDAEL\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the RIJNDAEL - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SERPENT",
+      "item": [
+        {
+          "name": "SERPENT - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SERPENT\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SERPENT - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SERPENT\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the SERPENT - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "TWOFISH",
+      "item": [
+        {
+          "name": "TWOFISH - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"TWOFISH\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TWOFISH - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"TWOFISH\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the TWOFISH - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RC6",
+      "item": [
+        {
+          "name": "RC6 - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"RC6\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RC6 - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"RC6\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the RC6 - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "MARS",
+      "item": [
+        {
+          "name": "MARS - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"MARS\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "MARS - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"MARS\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the MARS - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BLOWFISH",
+      "item": [
+        {
+          "name": "BLOWFISH - Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"BLOWFISH\",\n  \"feature\": \"ENCRYPT\",\n  \"data\": \"{{data_encrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"PLAIN_TEXT\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"BASE64\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "BLOWFISH - Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"BLOWFISH\",\n  \"feature\": \"DECRYPT\",\n  \"data\": \"{{data_decrypt}}\",\n  \"key\": \"{{key}}\",\n  \"inputType\": \"BASE64\",\n  \"keyInputType\": \"PLAIN_TEXT\",\n  \"outputType\": \"PLAIN_TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/crypto/process",
+              "host": ["{{base_url}}"],
+              "path": ["api", "crypto", "process"]
+            },
+            "description": "Copy data from the BLOWFISH - Encrypt response and paste it into PASTE_ENCRYPT_RESULT_HERE."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "data_encrypt",
+      "value": ""
+    },
+    {
+      "key": "key",
+      "value": ""
+    },
+    {
+      "key": "data_decrypt",
+      "value": ""
+    }
+  ]
+}

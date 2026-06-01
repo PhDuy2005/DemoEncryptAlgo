@@ -10,20 +10,21 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class RijndaelService extends AbstractEncryptionAlgorithmService {
+public class BlowfishService extends AbstractEncryptionAlgorithmService {
 
-    private static final String ALGORITHM = "AES";
-    private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private static final byte[] DEFAULT_IV = "1234567890123456".getBytes(StandardCharsets.UTF_8);
+    private static final int BLOCK_SIZE = 8;
+    private static final String ALGORITHM = "Blowfish";
+    private static final String CIPHER_TRANSFORMATION = "Blowfish/CBC/PKCS5Padding";
+    private static final byte[] DEFAULT_IV = "12345678".getBytes(StandardCharsets.UTF_8);
 
     @Override
     public AlgoName type() {
-        return AlgoName.RIJNDAEL;
+        return AlgoName.BLOWFISH;
     }
 
     @Override
     protected byte[] encrypt(byte[] plainTextBytes, byte[] keyBytes) throws Exception {
-        CryptoCodec.requireKeyLength(keyBytes, 16, 24, 32);
+        CryptoCodec.requireKeyRange(keyBytes, 4, 56);
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(DEFAULT_IV));
@@ -32,8 +33,8 @@ public class RijndaelService extends AbstractEncryptionAlgorithmService {
 
     @Override
     protected byte[] decrypt(byte[] cipherTextBytes, byte[] keyBytes) throws Exception {
-        CryptoCodec.requireKeyLength(keyBytes, 16, 24, 32);
-        CryptoCodec.requireBlockMultiple(cipherTextBytes, 16, "Ciphertext");
+        CryptoCodec.requireKeyRange(keyBytes, 4, 56);
+        CryptoCodec.requireBlockMultiple(cipherTextBytes, BLOCK_SIZE, "Ciphertext");
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(DEFAULT_IV));

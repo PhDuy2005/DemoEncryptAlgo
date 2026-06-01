@@ -459,7 +459,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
             }
         }
         Object sessionKey = new Object[] { sBox, subKeys };
-        if (DEBUG && debuglevel > 7) {
+        if (DEBUG) {
             System.out.println("S-box[]:");
             for (i = 0; i < 64; i++) {
                 for (j = 0; j < 4; j++)
@@ -516,7 +516,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
         Object[] sk = (Object[]) sessionKey; // extract S-box and session key
         int[] sBox = (int[]) sk[0];
         int[] sKey = (int[]) sk[1];
-        if (DEBUG && debuglevel > 6)
+        if (DEBUG)
             System.out.println("PT=" + toString(in, inOffset, BLOCK_SIZE));
         int x0 = (in[inOffset++] & 0xFF) |
                 (in[inOffset++] & 0xFF) << 8 |
@@ -549,7 +549,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
             x2 = x2 >>> 1 | x2 << 31;
             x3 = x3 << 1 | x3 >>> 31;
             x3 ^= t0 + 2 * t1 + sKey[k++];
-            if (DEBUG && debuglevel > 6)
+            if (DEBUG)
                 System.out.println(
                         "CT" + (R) + "=" + intToString(x0) + intToString(x1) + intToString(x2) + intToString(x3));
             t0 = Fe32(sBox, x2, 0);
@@ -558,7 +558,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
             x0 = x0 >>> 1 | x0 << 31;
             x1 = x1 << 1 | x1 >>> 31;
             x1 ^= t0 + 2 * t1 + sKey[k++];
-            if (DEBUG && debuglevel > 6)
+            if (DEBUG)
                 System.out.println(
                         "CT" + (R + 1) + "=" + intToString(x0) + intToString(x1) + intToString(x2) + intToString(x3));
         }
@@ -566,7 +566,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
         x3 ^= sKey[OUTPUT_WHITEN + 1];
         x0 ^= sKey[OUTPUT_WHITEN + 2];
         x1 ^= sKey[OUTPUT_WHITEN + 3];
-        if (DEBUG && debuglevel > 6)
+        if (DEBUG)
             System.out.println("CTw=" + intToString(x0) + intToString(x1) + intToString(x2) + intToString(x3));
         byte[] result = new byte[] {
                 (byte) x2, (byte) (x2 >>> 8), (byte) (x2 >>> 16), (byte) (x2 >>> 24),
@@ -574,7 +574,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
                 (byte) x0, (byte) (x0 >>> 8), (byte) (x0 >>> 16), (byte) (x0 >>> 24),
                 (byte) x1, (byte) (x1 >>> 8), (byte) (x1 >>> 16), (byte) (x1 >>> 24),
         };
-        if (DEBUG && debuglevel > 6) {
+        if (DEBUG) {
             System.out.println("CT=" + toString(result));
             System.out.println();
         }
@@ -597,7 +597,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
         Object[] sk = (Object[]) sessionKey; // extract S-box and session key
         int[] sBox = (int[]) sk[0];
         int[] sKey = (int[]) sk[1];
-        if (DEBUG && debuglevel > 6)
+        if (DEBUG)
             System.out.println("CT=" + toString(in, inOffset, BLOCK_SIZE));
         int x2 = (in[inOffset++] & 0xFF) |
                 (in[inOffset++] & 0xFF) << 8 |
@@ -619,7 +619,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
         x3 ^= sKey[OUTPUT_WHITEN + 1];
         x0 ^= sKey[OUTPUT_WHITEN + 2];
         x1 ^= sKey[OUTPUT_WHITEN + 3];
-        if (DEBUG && debuglevel > 6)
+        if (DEBUG)
             System.out.println("CTw=" + intToString(x2) + intToString(x3) + intToString(x0) + intToString(x1));
         int k = ROUND_SUBKEYS + 2 * ROUNDS - 1;
         int t0, t1;
@@ -630,7 +630,7 @@ public final class Twofish_Algorithm // implicit no-argument constructor
             x1 = x1 >>> 1 | x1 << 31;
             x0 = x0 << 1 | x0 >>> 31;
             x0 ^= t0 + t1 + sKey[k--];
-            if (DEBUG && debuglevel > 6)
+            if (DEBUG)
                 System.out.println("PT" + (ROUNDS - R) + "=" + intToString(x2) + intToString(x3) + intToString(x0)
                         + intToString(x1));
             t0 = Fe32(sBox, x0, 0);
